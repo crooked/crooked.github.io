@@ -37,6 +37,7 @@
     var marker = L.marker(start).addTo(map).bindPopup('Start');
     var end = L.latLng(decoded_polyline[decoded_polyline.length - 1]);
     var marker2 = L.marker(end).addTo(map).bindPopup('End');
+    map.fitBounds(polyline.getBounds())
 </script>
 {% endif %}
 
