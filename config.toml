@@ -1,2 +1,6 @@
 base_url = "https://crooked.github.io"
 compile_sass = true
+
+[extra]
+commit_hash_env_var = "GITHUB_SHA"
+base_tree_url = "https://github.com/crooked/crooked.github.io/tree"

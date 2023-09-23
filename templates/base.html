@@ -23,8 +23,9 @@
             </main>
             <footer>
                 {% block footer %}
-                {% if config.extra.commit_hash %}
-                deployed from commit <a href="{{ config.extra.base_tree_url | safe }}/{{ config.extra.commit_hash | safe }}">{{ config.extra.commit_hash }}</a>
+                {% if get_env(name=config.extra.commit_hash_env_var, default="") != "" %}
+                {% set commit_hash = get_env(name=config.extra.commit_hash_env_var) %}
+                deployed from commit <a href="{{ config.extra.base_tree_url | safe }}/{{ commit_hash | safe }}">{{ commit_hash | safe }}</a>
                 {% endif %}
                 {% endblock footer %}
             </footer>
