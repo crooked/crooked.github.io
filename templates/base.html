@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+    <head>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+        <meta content="width=device-width, initial-scale=1" name="viewport"/>
+        <meta name="robots" content="noindex">
+        <link rel="icon" href="data:,">
+        {% if page.title %}{% set title = page.title %}{% elif section.title %}{% set title = section.title %}{% elif config.title %}{% set title = config.title %}{% endif %}{% if title %}<title>{{ title }}</title>{% endif %}
+        <link rel="stylesheet" href="{{ get_url(path='style.css', trailing_slash=false) | safe }}"/>
+        {% block meta %}{% endblock meta %}
+    </head>
+    <body theme="auto">
+        <div class="w">
+            <header>
+                <nav>
+                    <a href="{{ get_url(path='@/_index.md') | safe }}">home</a>
+                    <a href="{{ get_url(path='@/about/_index.md') | safe }}">about</a>
+                </nav>
+                {% block header %}{% if title %}<h1>{{ config.title }}</h1>{% endif %}{% endblock header %}
+            </header>
+            <main class="page-content" aria-label="Content">
+                {% block content %}{% endblock content %}
+            </main>
+            <footer>
+                {% block footer %}
+                {% if config.extra.commit_hash %}
+                deployed from commit <a href="{{ config.extra.base_tree_url | safe }}/{{ config.extra.commit_hash | safe }}">{{ config.extra.commit_hash }}</a>
+                {% endif %}
+                {% endblock footer %}
+            </footer>
+        </div>
+        {% block script %}{% endblock script %}
+    </body>
+</html>
