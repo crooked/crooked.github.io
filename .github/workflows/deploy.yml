@@ -44,7 +44,8 @@ jobs:
         id: pages
         uses: actions/configure-pages@v3
       - name: Set environment variables
-        run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+        run: |
+          echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
       - name: Build with Zola
         run: |
           zola build

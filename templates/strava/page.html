@@ -24,7 +24,7 @@
     var decoded_polyline = L.PolylineUtil.decode('{{ page.extra.polyline }}');
     var polyline = L.polyline(decoded_polyline, {color: 'red'});
     
-    var map = L.map('map').setView(polyline.getBounds().getCenter(), 13);
+    var map = L.map('map').setView(polyline.getBounds().getCenter(), 16);
     map.attributionControl.setPrefix(false);
     polyline.addTo(map);
     

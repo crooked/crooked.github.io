@@ -1,10 +1,10 @@
 <!doctype html>
-<html>
+<html lang="en">
     <head>
-        <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+        <meta charset="utf-8"/>
         <meta content="width=device-width, initial-scale=1" name="viewport"/>
-        <meta name="robots" content="noindex">
-        <link rel="icon" href="data:,">
+        <meta name="robots" content="noindex"/>
+        <link rel="icon" href="data:,"/>
         {% if page.title %}{% set title = page.title %}{% elif section.title %}{% set title = section.title %}{% elif config.title %}{% set title = config.title %}{% endif %}{% if title %}<title>{{ title }}</title>{% endif %}
         <link rel="stylesheet" href="{{ get_url(path='style.css', trailing_slash=false) | safe }}"/>
         {% block meta %}{% endblock meta %}

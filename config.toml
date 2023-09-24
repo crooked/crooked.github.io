@@ -1,6 +1,7 @@
 base_url = "https://crooked.github.io"
 compile_sass = true
+minify_html = true
 
 [extra]
 commit_hash_env_var = "GITHUB_SHA_SHORT"
-base_commit_url = "https://github.com/crooked/crooked.github.io/commit/"
+base_commit_url = "https://github.com/crooked/crooked.github.io/commit"
