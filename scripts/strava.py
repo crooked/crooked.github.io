@@ -1,18 +1,21 @@
 import os
 import requests
+import sys
 import toml
 from datetime import datetime, timedelta
 
-CLIENT_ID =  os.getenv("STRAVA_CLIENT_ID")
-CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
-REFRESH_TOKEN = os.getenv("STRAVA_REFRESH_TOKEN")
-
-OAUTH_TOKEN_URL = "https://www.strava.com/oauth/token"
-BASE_API_URL = "https://www.strava.com/api/v3"
-PHOTO_TYPE_STILL = 1
+STRAVA_API_URL = "https://www.strava.com/api/v3"
+STRAVA_CLIENT_ID =  os.getenv("STRAVA_CLIENT_ID")
+STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
+STRAVA_REFRESH_TOKEN = os.getenv("STRAVA_REFRESH_TOKEN")
 
 class ActivitySummary:
-    def __init__(self, id: int, name: str, private: bool) -> None:
+    def __init__(
+        self,
+        id: int,
+        name: str,
+        private: bool,
+    ) -> None:
         self.id = id
         self.name = name
         self.private = private
@@ -44,7 +47,7 @@ class Activity:
         self.summary_polyline = summary_polyline
         self.photos = photos
 
-def main() -> None:
+def main(page_output_dir: str) -> None:
     print("Getting access token from refresh token...")
     access_token = get_access_token()
 
@@ -52,19 +55,20 @@ def main() -> None:
     found_activities = find_activities(access_token, magic_word="ssg")
 
     print("Generating pages for found activities...")
-    generated_pages = [generate_activity_page(found_activity) for found_activity in found_activities]
+    generated_pages = [generate_activity_page(found_activity, output_dir=page_output_dir) for found_activity in found_activities]
 
     print(f"Generated the following pages: {generated_pages}")
 
 def get_access_token() -> str:
+    token_url = "/".join([STRAVA_API_URL, "oauth", "token"])
     data = {
         "grant_type": "refresh_token",
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-        "refresh_token": REFRESH_TOKEN,
+        "client_id": STRAVA_CLIENT_ID,
+        "client_secret": STRAVA_CLIENT_SECRET,
+        "refresh_token": STRAVA_REFRESH_TOKEN,
     }
 
-    response = requests.post(OAUTH_TOKEN_URL, data=data, verify=False)
+    response = requests.post(token_url, data=data)
     response.raise_for_status()
 
     return response.json()["access_token"]
@@ -73,11 +77,13 @@ def find_activities(access_token: str, magic_word: str):
     activity_summaries = get_activity_summaries(access_token)
 
     for activity_summary in activity_summaries:
+        # ignore private activities
         if activity_summary.private:
             continue
 
         activity = get_activity(access_token, activity_summary.id)
 
+        # ignore activities that don't have a private note beginning with the magic word
         if not activity.private_note.startswith(magic_word):
             continue
 
@@ -85,7 +91,7 @@ def find_activities(access_token: str, magic_word: str):
 
         yield activity
 
-def generate_activity_page(activity: Activity) -> str:
+def generate_activity_page(activity: Activity, output_dir: str) -> str:
     toml_contents = {
         "title": activity.name,
         "extra": {
@@ -107,7 +113,7 @@ def generate_activity_page(activity: Activity) -> str:
     if activity.photos:
         toml_contents["extra"]["pictures"] = activity.photos
 
-    filename = f"{activity.end_datetime.date()}-{activity.id}.md"
+    filename = os.path.join(output_dir, f"{activity.end_datetime.date()}-{activity.id}.md")
     with open(filename, "w") as file:
         lines: list[str] = []
         lines.append(f"+++\n{toml.dumps(toml_contents)}+++")
@@ -124,7 +130,7 @@ def generate_activity_page(activity: Activity) -> str:
     return filename
 
 def get_activity_summaries(access_token: str, count: int=200) -> list[ActivitySummary]:
-    activities_url = "/".join([BASE_API_URL, "athlete", "activities"])
+    activities_url = "/".join([STRAVA_API_URL, "athlete", "activities"])
     headers = {"Authorization": "Bearer " + access_token}
     params = {"per_page": count, "page": 1}
 
@@ -133,7 +139,7 @@ def get_activity_summaries(access_token: str, count: int=200) -> list[ActivitySu
     return [ActivitySummary(id=activity["id"], name=activity["name"], private=activity["private"]) for activity in activities]
 
 def get_activity(access_token: str, activity_id: int) -> Activity:
-    activity_url = "/".join([BASE_API_URL, "activities", str(activity_id)])
+    activity_url = "/".join([STRAVA_API_URL, "activities", str(activity_id)])
     headers = {"Authorization": "Bearer " + access_token}
     params = {"include_all_efforts ": False}
 
@@ -153,7 +159,9 @@ def get_activity(access_token: str, activity_id: int) -> Activity:
     )
 
 def get_activity_photos(access_token: str, activity_id: int, photo_size: str="1000") -> list[str]:
-    activity_photos_url = "/".join([BASE_API_URL, "activities", str(activity_id), "photos"])
+    PHOTO_TYPE_STILL = 1
+
+    activity_photos_url = "/".join([STRAVA_API_URL, "activities", str(activity_id), "photos"])
     headers = {"Authorization": "Bearer " + access_token}
     params = {"size": photo_size}
 
@@ -163,4 +171,4 @@ def get_activity_photos(access_token: str, activity_id: int, photo_size: str="10
     return photo_urls
 
 if __name__ == "__main__":
-    main()
+    main(page_output_dir=sys.argv[1])
