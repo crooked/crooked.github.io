@@ -64,9 +64,10 @@ def get_access_token() -> str:
         "refresh_token": REFRESH_TOKEN,
     }
 
-    response = requests.post(OAUTH_TOKEN_URL, data=data).json()
+    response = requests.post(OAUTH_TOKEN_URL, data=data)
+    response.raise_for_status()
 
-    return response["access_token"]
+    return response.json()["access_token"]
 
 def find_activities(access_token: str, magic_word: str):
     activity_summaries = get_activity_summaries(access_token)
