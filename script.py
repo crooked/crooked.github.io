@@ -11,19 +11,6 @@ OAUTH_TOKEN_URL = "https://www.strava.com/oauth/token"
 BASE_API_URL = "https://www.strava.com/api/v3"
 PHOTO_TYPE_STILL = 1
 
-import requests
-import logging
-
-import http.client as http_client
-http_client.HTTPConnection.debuglevel = 1
-
-# You must initialize logging, otherwise you'll not see debug output.
-logging.basicConfig()
-logging.getLogger().setLevel(logging.DEBUG)
-requests_log = logging.getLogger("requests.packages.urllib3")
-requests_log.setLevel(logging.DEBUG)
-requests_log.propagate = True
-
 class ActivitySummary:
     def __init__(self, id: int, name: str, private: bool) -> None:
         self.id = id
@@ -61,9 +48,6 @@ def main() -> None:
     print("Getting access token from refresh token...")
     access_token = get_access_token()
 
-    return
-    # access_token = os.getenv("STRAVA_ACCESS_TOKEN", "")
-
     print("Finding non-private activities that contain a private note starting with the chosen magic word...")
     found_activities = find_activities(access_token, magic_word="ssg")
 
@@ -81,14 +65,7 @@ def get_access_token() -> str:
     }
 
     response = requests.post(OAUTH_TOKEN_URL, data=data, verify=False)
-
-    try:
-        response.raise_for_status()
-    except:
-        try:
-            print(response.json())
-        finally:
-            raise
+    response.raise_for_status()
 
     return response.json()["access_token"]
 
