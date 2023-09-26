@@ -46,7 +46,8 @@ class Activity:
 
 def main() -> None:
     print("Getting access token from refresh token...")
-    access_token = get_access_token()
+    # access_token = get_access_token()
+    access_token = os.getenv("STRAVA_ACCESS_TOKEN", "")
 
     print("Finding non-private activities that contain a private note starting with the chosen magic word...")
     found_activities = find_activities(access_token, magic_word="ssg")
