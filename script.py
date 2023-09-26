@@ -65,7 +65,14 @@ def get_access_token() -> str:
     }
 
     response = requests.post(OAUTH_TOKEN_URL, data=data, verify=False)
-    response.raise_for_status()
+
+    try:
+        response.raise_for_status()
+    except:
+        try:
+            print(response.json())
+        finally:
+            raise
 
     return response.json()["access_token"]
 
