@@ -64,7 +64,7 @@ def get_access_token() -> str:
         "refresh_token": REFRESH_TOKEN,
     }
 
-    response = requests.post(OAUTH_TOKEN_URL, data=data)
+    response = requests.post(OAUTH_TOKEN_URL, data=data, verify=False).json()
     response.raise_for_status()
 
     return response.json()["access_token"]
