@@ -1,4 +1,4 @@
-name: Fetch Strava activities
+name: Upsert Strava pages
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  update-strava-pages:
+  upsert:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,3 +29,8 @@ jobs:
           STRAVA_ACCESS_TOKEN: ${{ secrets.STRAVA_ACCESS_TOKEN }}
         run: |
           python ./scripts/strava.py ./content/strava
+      - name: Commit new or modified pages
+        run: |
+          git add ./content/strava
+          git commit -m "Add/update Strava pages"
+          git push origin
