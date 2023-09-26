@@ -7,7 +7,7 @@ CLIENT_ID =  os.getenv("STRAVA_CLIENT_ID")
 CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
 REFRESH_TOKEN = os.getenv("STRAVA_REFRESH_TOKEN")
 
-OAUTH_TOKEN_URL = "https://www.strava.com/oauth/token"
+OAUTH_TOKEN_URL = "https://www.strava.com/api/v3/oauth/token"
 BASE_API_URL = "https://www.strava.com/api/v3"
 PHOTO_TYPE_STILL = 1
 
@@ -46,8 +46,8 @@ class Activity:
 
 def main() -> None:
     print("Getting access token from refresh token...")
-    # access_token = get_access_token()
-    access_token = os.getenv("STRAVA_ACCESS_TOKEN", "")
+    access_token = get_access_token()
+    # access_token = os.getenv("STRAVA_ACCESS_TOKEN", "")
 
     print("Finding non-private activities that contain a private note starting with the chosen magic word...")
     found_activities = find_activities(access_token, magic_word="ssg")
