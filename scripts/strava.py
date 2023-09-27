@@ -47,12 +47,12 @@ class Activity:
         self.summary_polyline = summary_polyline
         self.photos = photos
 
-def main(page_output_dir: str) -> None:
+def main(magic_word: str, page_output_dir: str) -> None:
     print("Getting access token from refresh token...")
     access_token = get_access_token()
 
     print("Finding non-private activities that contain a private note starting with the chosen magic word...")
-    found_activities = find_activities(access_token, magic_word="ssg")
+    found_activities = find_activities(access_token, magic_word=magic_word)
 
     print("Generating pages for found activities...")
     generated_pages = [generate_activity_page(found_activity, output_dir=page_output_dir) for found_activity in found_activities]
@@ -158,7 +158,7 @@ def get_activity(access_token: str, activity_id: int) -> Activity:
         summary_polyline=activity["map"]["summary_polyline"],
     )
 
-def get_activity_photos(access_token: str, activity_id: int, photo_size: str="1000") -> list[str]:
+def get_activity_photos(access_token: str, activity_id: int, photo_size: int=1000) -> list[str]:
     PHOTO_TYPE_STILL = 1
 
     activity_photos_url = "/".join([STRAVA_API_URL, "activities", str(activity_id), "photos"])
@@ -166,9 +166,9 @@ def get_activity_photos(access_token: str, activity_id: int, photo_size: str="10
     params = {"size": photo_size}
 
     activity_photos = requests.get(activity_photos_url, headers=headers, params=params).json()
-    photo_urls = [activity_photo["urls"][photo_size] for activity_photo in activity_photos if activity_photo["type"] == PHOTO_TYPE_STILL]
+    photo_urls = [activity_photo["urls"][str(photo_size)] for activity_photo in activity_photos if activity_photo["type"] == PHOTO_TYPE_STILL]
 
     return photo_urls
 
 if __name__ == "__main__":
-    main(page_output_dir=sys.argv[1])
+    main(magic_word="ssg", page_output_dir=sys.argv[1])

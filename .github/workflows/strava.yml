@@ -1,13 +1,10 @@
-name: Upsert Strava pages
+name: Sync Strava activity pages
 
 on:
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  upsert:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

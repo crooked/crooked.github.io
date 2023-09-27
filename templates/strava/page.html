@@ -41,11 +41,7 @@
 </script>
 {% endif %}
 
-{% if page.extra.description %}
-<h2>Description</h2>
-
-{{ page.extra.description }}
-{% endif %}
+{{ page.content | safe }}
 
 {% if page.extra.pictures %}
 <h2>Pictures</h2>
@@ -56,6 +52,4 @@
 </p>
 {% endfor %}
 {% endif %}
-
-{{ page.content | safe }}
 {% endblock content %}
